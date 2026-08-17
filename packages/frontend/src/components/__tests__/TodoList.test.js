@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import TodoList from '../TodoList';
 
 describe('TodoList Component', () => {
@@ -58,5 +58,52 @@ describe('TodoList Component', () => {
     // Verify that edit buttons exist for each todo
     expect(screen.getAllByLabelText(/Edit/)).toHaveLength(2);
     expect(screen.getAllByLabelText(/Delete/)).toHaveLength(2);
+  });
+
+  describe('Periodic overdue re-check', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should re-render at least once per minute so overdue status stays current', () => {
+      const referenceNow = new Date();
+      const todayIso = referenceNow.toISOString().split('T')[0];
+      const todoDueToday = [
+        {
+          id: 3,
+          title: 'Due today todo',
+          dueDate: todayIso,
+          completed: 0,
+          createdAt: '2025-11-01T00:00:00Z'
+        }
+      ];
+
+      render(<TodoList todos={todoDueToday} {...mockHandlers} isLoading={false} />);
+
+      // Not yet overdue: due date is today, at the moment of the initial render.
+      expect(screen.queryByText('Overdue')).not.toBeInTheDocument();
+
+      // Simulate the day rolling over then advance the periodic timer by >= 60s.
+      jest.setSystemTime(new Date(referenceNow.getTime() + 24 * 60 * 60 * 1000));
+      act(() => {
+        jest.advanceTimersByTime(60000);
+      });
+
+      expect(screen.getByText('Overdue')).toBeInTheDocument();
+    });
+
+    it('should clear the interval on unmount', () => {
+      const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
+      const { unmount } = render(<TodoList todos={mockTodos} {...mockHandlers} isLoading={false} />);
+
+      unmount();
+
+      expect(clearIntervalSpy).toHaveBeenCalled();
+      clearIntervalSpy.mockRestore();
+    });
   });
 });

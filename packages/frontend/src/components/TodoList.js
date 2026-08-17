@@ -1,7 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import TodoCard from './TodoCard';
 
 function TodoList({ todos, onToggle, onEdit, onDelete, isLoading }) {
+  // Forces periodic re-render so overdue status stays current purely from elapsed time (FR-007).
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTick((tick) => tick + 1);
+    }, 60000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
   if (todos.length === 0) {
     return (
       <div className="todo-list empty-state">

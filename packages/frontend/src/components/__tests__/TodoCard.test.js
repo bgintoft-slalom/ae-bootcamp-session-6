@@ -99,4 +99,69 @@ describe('TodoCard Component', () => {
     
     expect(screen.queryByText(/Due:/)).not.toBeInTheDocument();
   });
+
+  describe('Overdue badge', () => {
+    const pastDueDate = '2020-01-01';
+    const futureDueDate = '2999-01-01';
+    const todayDueDate = new Date().toISOString().split('T')[0];
+
+    it('should render the "Overdue" badge for a past due date incomplete todo', () => {
+      const overdueTodo = { ...mockTodo, dueDate: pastDueDate, completed: 0 };
+      render(<TodoCard todo={overdueTodo} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.getByText('Overdue')).toBeInTheDocument();
+    });
+
+    it('should not render the "Overdue" badge for a past due date completed todo', () => {
+      const completedTodo = { ...mockTodo, dueDate: pastDueDate, completed: 1 };
+      render(<TodoCard todo={completedTodo} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.queryByText('Overdue')).not.toBeInTheDocument();
+    });
+
+    it('should not render the "Overdue" badge for a due date of today', () => {
+      const todayTodo = { ...mockTodo, dueDate: todayDueDate, completed: 0 };
+      render(<TodoCard todo={todayTodo} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.queryByText('Overdue')).not.toBeInTheDocument();
+    });
+
+    it('should not render the "Overdue" badge for a future due date', () => {
+      const futureTodo = { ...mockTodo, dueDate: futureDueDate, completed: 0 };
+      render(<TodoCard todo={futureTodo} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.queryByText('Overdue')).not.toBeInTheDocument();
+    });
+
+    it('should not render the "Overdue" badge when there is no due date', () => {
+      const noDueDateTodo = { ...mockTodo, dueDate: null, completed: 0 };
+      render(<TodoCard todo={noDueDateTodo} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.queryByText('Overdue')).not.toBeInTheDocument();
+    });
+
+    it('should remove the "Overdue" badge immediately when the todo is toggled complete', () => {
+      const overdueTodo = { ...mockTodo, dueDate: pastDueDate, completed: 0 };
+      const { rerender } = render(<TodoCard todo={overdueTodo} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.getByText('Overdue')).toBeInTheDocument();
+
+      const completedTodo = { ...overdueTodo, completed: 1 };
+      rerender(<TodoCard todo={completedTodo} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.queryByText('Overdue')).not.toBeInTheDocument();
+    });
+
+    it('should remove the "Overdue" badge immediately when the due date is edited to today/future', () => {
+      const overdueTodo = { ...mockTodo, dueDate: pastDueDate, completed: 0 };
+      const { rerender } = render(<TodoCard todo={overdueTodo} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.getByText('Overdue')).toBeInTheDocument();
+
+      const rescheduledTodo = { ...overdueTodo, dueDate: futureDueDate };
+      rerender(<TodoCard todo={rescheduledTodo} {...mockHandlers} isLoading={false} />);
+
+      expect(screen.queryByText('Overdue')).not.toBeInTheDocument();
+    });
+  });
 });

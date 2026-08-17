@@ -30,6 +30,7 @@ Expected outcomes:
   - "Overdue" badge renders for an overdue todo
   - badge does not render for a completed, future-due, or due-today todo
   - badge disappears immediately when the todo is toggled complete (no reload)
+  - badge disappears immediately when the todo's due date is edited to today/future (no reload)
 - Coverage remains at or above the project's 80%+ threshold (`--coverage` is already enabled
   in `packages/frontend/package.json`'s `test` script).
 
