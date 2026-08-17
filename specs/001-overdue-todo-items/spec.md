@@ -8,6 +8,13 @@
 
 **Input**: User description: "Support for Overdue Todo Items - As a todo application user, I want to easily identify and distinguish overdue tasks in my todo list, so that I can prioritize my work and quickly see which tasks are past their due date. Users need a clear, visual way to identify which todos have not been completed by their due date. This feature must include automated tests covering the overdue determination logic and its display, following the existing Jest patterns in the repository."
 
+## Clarifications
+
+### Session 2026-08-17
+
+- Q: What should the overdue indicator look like on a todo card? → A: Text badge "Overdue"
+- Q: Should the overdue indicator update automatically overnight with no user action, or only recompute the next time something else causes the list to re-render? → A: Periodic re-check
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Spot Overdue Todos at a Glance (Priority: P1)
@@ -48,7 +55,7 @@ As a todo application user, I want a todo's overdue indicator to update as soon 
 - A todo due exactly today is not treated as overdue (it becomes overdue starting the following day).
 - A completed todo is never shown as overdue, regardless of its due date.
 - A todo with no due date is never shown as overdue.
-- Overdue status is re-evaluated each time the todo list is rendered, so a todo can transition from "not overdue" to "overdue" simply due to the passage of time (no due-date or completion change required).
+- Overdue status is re-evaluated each time the todo list is rendered, and also periodically (at least once per minute) while the list stays open, so a todo can transition from "not overdue" to "overdue" simply due to the passage of time (no due-date, completion change, or manual refresh required).
 
 ## Requirements *(mandatory)*
 
@@ -59,8 +66,8 @@ As a todo application user, I want a todo's overdue indicator to update as soon 
 - **FR-003**: System MUST NOT classify a completed todo as overdue, regardless of its due date.
 - **FR-004**: System MUST treat a todo whose due date is the current date as not overdue.
 - **FR-005**: The todo list MUST visually distinguish overdue todos from all other todos.
-- **FR-006**: The overdue indicator MUST convey status through a means other than color alone (e.g., a text label or icon with an accessible name), so the status is perceivable without relying on color vision.
-- **FR-007**: Overdue status MUST be re-evaluated automatically whenever the todo list is displayed, based on the current date, without requiring manual user action.
+- **FR-006**: The overdue indicator MUST be a text badge reading "Overdue", styled with the existing Danger color, displayed next to the due date, so the status is perceivable without relying on color alone.
+- **FR-007**: Overdue status MUST be re-evaluated automatically whenever the todo list is displayed, and periodically (at least once per minute) while the list remains open, based on the current date, without requiring manual user action.
 - **FR-008**: Overdue status MUST update immediately when a todo's completion state or due date changes, without requiring a page reload.
 - **FR-009**: The overdue determination logic MUST be covered by automated tests validating past-due, due-today, future-due, no-due-date, and completed-but-past-due scenarios.
 - **FR-010**: The display of the overdue indicator MUST be covered by automated tests confirming it appears and disappears correctly for the scenarios in FR-009.
