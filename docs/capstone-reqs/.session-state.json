@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "spec": "capstone-reqs",
+  "captured_at": "2026-08-23T18:36:24Z",
+  "captured_by": "Claude Sonnet 5 (reset after test cleanup)",
+  "notes": "Test issues #3 and #4 closed as not_planned (test artifacts). No open requirement-proposal issues remain.",
+  "github": {
+    "repo": "bgintoft-slalom/ae-bootcamp-session-6",
+    "label": "requirement-proposal",
+    "issues": []
+  }
+}
